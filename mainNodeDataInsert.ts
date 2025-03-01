@@ -18,8 +18,7 @@ export default class dataInserter {
 
     // Configure CPE Files and SQL Script for insertion
     async dataInsertion(): Promise<void> {
-        const differentDataTypes = ['CWE'];
-        // ['CWE', 'CPE', 'CVE', 'cverelationships'];
+        const differentDataTypes = ['CWE', 'CPE', 'CVE', 'cverelationships'];
         // , 'cperelationships'];
 
         const BATCH_SIZE = 1000;
