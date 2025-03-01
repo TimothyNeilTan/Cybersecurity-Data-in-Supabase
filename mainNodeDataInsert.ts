@@ -258,5 +258,5 @@ export default class dataInserter {
     }
 };
 
-const dataInsert = new dataInserter();
-dataInsert.dataInsertion();
+// const dataInsert = new dataInserter();
+// dataInsert.dataInsertion();
