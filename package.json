@@ -1,0 +1,37 @@
+{
+  "dependencies": {
+    "@supabase/supabase-js": "^2.49.1",
+    "@types/adm-zip": "^0.5.7",
+    "@types/opossum": "^8.1.8",
+    "@types/xml2js": "^0.4.14",
+    "adm-zip": "^0.5.16",
+    "cheerio": "^1.0.0",
+    "child_process": "^1.0.2",
+    "dotenv": "^16.4.7",
+    "fs": "^0.0.1-security",
+    "node-fetch": "^3.3.2",
+    "opossum": "^8.4.0",
+    "path": "^0.12.7",
+    "pg-format": "^1.0.4",
+    "stream-chain": "^3.4.0",
+    "stream-json": "^1.9.1",
+    "undici": "^7.3.0",
+    "util": "^0.12.5",
+    "uuid": "^11.1.0",
+    "xml2js": "^0.6.2"
+  },
+  "name": "supbase_test",
+  "version": "1.0.0",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "description": "",
+  "devDependencies": {
+    "@types/pg-format": "^1.0.5",
+    "@types/stream-json": "^1.7.8"
+  }
+}
