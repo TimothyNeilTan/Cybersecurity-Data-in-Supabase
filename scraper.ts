@@ -145,8 +145,8 @@ export async function downloadFilesCWE(importPath: string): Promise<void> {
 
 export async function downloadDatasets(importPath: string): Promise<void> {
  try {
-    // await downloadFilesCVE(importPath);
-    // await downloadFilesCPE(importPath);
+    await downloadFilesCVE(importPath);
+    await downloadFilesCPE(importPath);
     await downloadFilesCWE(importPath);
  }
     catch (error) {
@@ -287,4 +287,4 @@ async function replaceUnwantedStringCWE(dirPath: string): Promise<void> {
   // fs.unlinkSync(filePath);
 }
 // Run the downloadDatasets function
-downloadDatasets(path.join(__dirname, '..' ,'storageDir'));
+// downloadDatasets(path.join(__dirname, '..' ,'storageDir'));
