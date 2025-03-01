@@ -11,6 +11,8 @@ This tool is designed to extract and upload data related to CWE, CPE, and CVE in
 ---
 
 ## Key Considerations
+- The relationships data works to upload but since this supabase instance is dependent on a foreign key, it will run into errors here
+- The reason why I haven't implmented the relationships data immediately is because of the sheer amount of nodes which will anundate the database (read below to see the data volume)
 
 ### Data Volume
 - **CVE Data:**  
@@ -18,13 +20,13 @@ This tool is designed to extract and upload data related to CWE, CPE, and CVE in
   - This may slow down search operations because of the increased time complexity.
 
 - **CPE Data:**  
-  - The CPE table contains around 1M rows.
-  - Adding detailed relationships (parent-child) can rapidly increase the complexity.
-  - **Recommendation:** Only use the parent relationship. The detailed child relationships can be derived from the JSON data.
+  - The CPE specfic relationships are parent to child relationships
+        - What I mean by this is that the initial CPE source node is technically the parent and the target nodes are just variations and versions of that specific endpoint
+            - ex: the CPE parent is a macbook but the CPE child is the macbook x86 and arm so that's two different skus already but then if you also include other information, this can quickly spiral 
+            - I HEAVILY RECOMMEND NOT ADDING THESE relationships (just use the parent relationship and you can search from there after since it's stored in the json data anyways)
 
-- **CWE Data:**  
-  - Enriches the dataset with additional details (weaknesses, categories, etc.).
-  - Requires new tables for a more comprehensive dataset.
+- **CWE Data:**
+  - Requires new tables for a more comprehensive dataset since we're currently just using the most recent file due to following the logic from the other repo.
 
 ### Data Relationships
 - **CPE Relationships:**  
@@ -68,7 +70,7 @@ This is the core component, responsible for:
   - Retrieves data from various sources hosting CWE, CPE, and CVE data.
   - Includes functions for batching and transforming CWE data from XML to JSON.
 - **Batching:**  
-  - The CPE files (around 1 GB each) are split into 2000+ smaller files for processing and uploading.
+  - The CPE file (around 1 GB) is split into 2000+ smaller files for processing and uploading.
 
 ---
 
@@ -78,8 +80,8 @@ This is the core component, responsible for:
    - Update the `.env` file with your Supabase credentials.
 
 2. **Database Setup:**
-   - Manually create the required tables in your Supabase instance.
-   - Use the provided `enum_sql_queries` for table creation.
+   - You will need to manually create the required tables in your Supabase instance.
+   - Please sse the provided sql queries in the `enum_sql_queries` file for table creation.
 
 3. **Running the Script:**
    - Execute the `main.js` file to start the data extraction and insertion process.
@@ -97,3 +99,7 @@ This is the core component, responsible for:
 - **Future Enhancements:**  
   - Consider adding concurrency for faster batch processing.
   - Review and potentially refine error handling and logging for better troubleshooting.
+  - Using supabase CLI to auto create the tables within instance
+    - creating more supabase functions to handle the data insertion and uuid conflicts
+  - Adding in the rest of the CWE data such as weaknesses, categories etc. since it will give more enriched information towards these CWEs and will require more tables to be created 
+
