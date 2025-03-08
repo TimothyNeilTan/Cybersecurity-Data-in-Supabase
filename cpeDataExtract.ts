@@ -29,7 +29,8 @@ export default class cpeFunctions {
     cpeRelationshipsExtract(jsonData: any){
         const { v4: uuidv4 } = require('uuid');
         const fs = require('fs');
-        const cpeBatchData = JSON.parse(fs.readFileSync('/Users/ttan/supbase_test/dataStorage/CPE_Batch.json', 'utf8'));
+        const path = require('path');
+        const cpeBatchData = JSON.parse(fs.readFileSync(path.join(__dirname, 'dataStorage', 'CPE_Batch.json'), 'utf8'));
         const relationships: {relationship_uuid: string, created_at: Date, source_node: string, target_node: string, relationship_type: string, relationship_data: any[]}[] = [];
         interface cpeEntry {
             cpeID: string;

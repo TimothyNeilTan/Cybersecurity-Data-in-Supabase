@@ -35,10 +35,11 @@ export default class cveFunctions {
     cveRelationshipsExtract(jsonData: any){
         const fs = require('fs');
         const { v4: uuidv4 } = require('uuid');
+        const path = require('path');
         const relationships: {relationship_uuid: string, created_at: Date, source_node: string, target_node: string, relationship_type: string, relationship_data: any[]}[] = [];
 
         //---------------for readability----------------///
-        const cveBatchData = JSON.parse(fs.readFileSync('/Users/ttan/supbase_test/dataStorage/CVE_Batch.json', 'utf8'));
+        const cveBatchData = JSON.parse(fs.readFileSync(path.join(__dirname, 'dataStorage', 'CVE_Batch.json'), 'utf8'));
         interface cveEntry {
             cveID: string;
             node_uuid: string;
@@ -48,7 +49,7 @@ export default class cveFunctions {
         );
 
         //---------------for readability----------------///
-        const cpeBatchData = JSON.parse(fs.readFileSync('/Users/ttan/supbase_test/dataStorage/CPE_Batch.json', 'utf8'));
+        const cpeBatchData = JSON.parse(fs.readFileSync(path.join(__dirname, 'dataStorage', 'CPE_Batch.json'), 'utf8'));
         interface cpeEntry {
             cpeID: string;
             node_uuid: string;
@@ -58,7 +59,7 @@ export default class cveFunctions {
         );
 
         //---------------for readability----------------///
-        const cweBatchData = JSON.parse(fs.readFileSync('/Users/ttan/supbase_test/dataStorage/CWE_Batch.json', 'utf8'));
+        const cweBatchData = JSON.parse(fs.readFileSync(path.join(__dirname, 'dataStorage', 'CWE_Batch.json'), 'utf8'));
         interface cweEntry {
             cweID: string;
             node_uuid: string;
