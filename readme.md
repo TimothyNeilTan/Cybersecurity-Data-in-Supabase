@@ -81,10 +81,18 @@ This is the core component, responsible for:
 
 2. **Database Setup:**
    - You will need to manually create the required tables in your Supabase instance.
-   - Please sse the provided sql queries in the `enum_sql_queries` file for table creation.
+    - Please sse the provided sql queries in the `enum_sql_queries` file for table creation.
+   - Add the required triggers for the CWE, CVE, and CPE tables in supabase to include the relationships data + nodes data
 
 3. **Running the Script:**
    - Execute the `main.js` file to start the data extraction and insertion process.
+
+4. **Including CPE relationships data**
+   - If you would like to include the CPE relationships data, please go to `mainNodeDataInsert` as the instructions on where to uncomment will be there on lines 21-23.
+    - Be sure to include `cperelationships` at the end of the array so that the process will be ran
+   - *Warning*: The CPE child data is extremely large >20M rows and thus this will extend to both relationships + nodes tables as well
+
+  
 
 ---
 

@@ -16,12 +16,13 @@ export default class dataInserter {
     this.importPath = path.join(__dirname, '..', 'storageDir');
     }
 
-    // Configure CPE Files and SQL Script for insertion
     async dataInsertion(): Promise<void> {
-        const differentDataTypes = ['CPE'];
-        //if you want to generate the CPE relationships you can uncomment the lines 67-77 (granted though that it will generate 13million + new records so do it at your own risk)
-        // ['cverelationships'];
-        // ['CWE', 'CPE', 'CVE', 'cverelationships'];
+        const differentDataTypes = 
+        // if you want to generate the CVE <-> CPE relationships you can uncomment the lines 68-78
+        // (granted though that it will generate 13million + new records so do it at your own risk)
+        // You will need to go to the cveDataExtract and uncomment the lines in 88-106 as well
+        ['CWE', 'CPE', 'CVE', 'cverelationships'];
+        // ['cperelationships'];
 
         const BATCH_SIZE = 1000;
         for (const dataType of differentDataTypes) {
@@ -81,9 +82,21 @@ export default class dataInserter {
                 else if (dataType === 'CWE') {
                     const cweData = new cweFunctions(); 
                     const cweNodes = cweData.cweDataExtract(fileContent);        
-                 try {
-                        for (let i = 0; i < cweNodes.length; i += BATCH_SIZE) {
-                            const batch = cweNodes.slice(i, i + BATCH_SIZE);
+                    try {
+                            for (let i = 0; i < cweNodes.length; i += BATCH_SIZE) {
+                                const batch = cweNodes.slice(i, i + BATCH_SIZE);
+                                await this.queryDataScript(batch, 'CWE');
+                                console.log(`Inserted batch ${Math.floor(i / BATCH_SIZE) + 1}`);
+                            }
+                        }
+                        catch (e) {
+                            console.error("An error occurred with uploading the CWE files: ", e);
+                        }
+                    
+                    const cweCategoryNodes = cweData.cweCategoryDataExtract(fileContent);
+                    try {
+                        for (let i = 0; i < cweCategoryNodes.length; i += BATCH_SIZE) {
+                            const batch = cweCategoryNodes.slice(i, i + BATCH_SIZE);
                             await this.queryDataScript(batch, 'CWE');
                             console.log(`Inserted batch ${Math.floor(i / BATCH_SIZE) + 1}`);
                         }
@@ -91,6 +104,7 @@ export default class dataInserter {
                     catch (e) {
                         console.error("An error occurred with uploading the CWE files: ", e);
                     }
+
                 }
                 
                 //--------CVE--------//
@@ -170,12 +184,6 @@ export default class dataInserter {
                             
                             const endPortion = buffer.toString();
                             const lastBracketPos = endPortion.lastIndexOf(']');
-                            
-                            // if (lastBracketPos === -1) {
-                            //     console.log('Could not find closing bracket in the file');
-                            //     process.exit();
-                            // }
-                            
                             
                             // Calculate the actual position in the file
                             const actualEndPos = fileSize - buffer.length + lastBracketPos;
@@ -265,6 +273,3 @@ export default class dataInserter {
         return Files;
     }
 };
-
-const dataInsert = new dataInserter();
-dataInsert.dataInsertion();

@@ -287,4 +287,4 @@ async function replaceUnwantedStringCWE(dirPath: string): Promise<void> {
   // fs.unlinkSync(filePath);
 }
 // Run the downloadDatasets function
-downloadDatasets(path.join(__dirname, '..' ,'storageDir'));
+// downloadDatasets(path.join(__dirname, '..' ,'storageDir'));
