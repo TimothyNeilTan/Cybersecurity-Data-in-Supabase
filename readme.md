@@ -85,7 +85,8 @@ This is the core component, responsible for:
    - Add the required triggers for the CWE, CVE, and CPE tables in supabase to include the relationships data + nodes data
 
 3. **Running the Script:**
-   - Execute the `main.js` file to start the data extraction and insertion process.
+   - Remember to compile w/ `tsc`
+   - Execute the file using `node ./dist/main.js` to start the data extraction and insertion process.
 
 4. **Including CPE relationships data**
    - If you would like to include the CPE relationships data, please go to `mainNodeDataInsert` as the instructions on where to uncomment will be there on lines 21-23.
