@@ -18,8 +18,10 @@ export default class dataInserter {
 
     // Configure CPE Files and SQL Script for insertion
     async dataInsertion(): Promise<void> {
-        const differentDataTypes = ['CWE', 'CPE', 'CVE', 'cverelationships'];
-        // , 'cperelationships'];
+        const differentDataTypes = ['CPE'];
+        //if you want to generate the CPE relationships you can uncomment the lines 67-77 (granted though that it will generate 13million + new records so do it at your own risk)
+        // ['cverelationships'];
+        // ['CWE', 'CPE', 'CVE', 'cverelationships'];
 
         const BATCH_SIZE = 1000;
         for (const dataType of differentDataTypes) {
@@ -50,6 +52,7 @@ export default class dataInserter {
                 if (dataType === 'CPE') {{
                     const cpeData = new cpeFunctions();
                     const cpeNodes = cpeData.cpeDataExtract(fileContent);
+                    
                     try {
                         for (let i = 0; i < cpeNodes.length; i += BATCH_SIZE) {
                             const batch = cpeNodes.slice(i, i + BATCH_SIZE);
@@ -60,6 +63,18 @@ export default class dataInserter {
                     } catch (e) {
                         console.error("An error occurred with uploading the CPE files: ", e);
                     }
+
+                    // const cpeChildNodes = cpeData.cpeChildExtract(fileContent);
+                    // try {
+                    //     for (let i = 0; i < cpeChildNodes.length; i += BATCH_SIZE) {
+                    //         const batch = cpeChildNodes.slice(i, i + BATCH_SIZE);
+                    //         await this.queryDataScript(batch, 'CPE');
+                    //         console.log(`Inserted batch ${Math.floor(i / BATCH_SIZE) + 1}`);
+                    //     }
+                    // console.log('Inserted CPE Child data');
+                    // } catch (e) {
+                    //     console.error("An error occurred with uploading the CPE Child files: ", e);
+                    // }
                 }}
 
                 //--------CWE--------//
@@ -88,7 +103,7 @@ export default class dataInserter {
                             await this.queryDataScript(batch, 'CVE');
                             console.log(`Inserted batch ${Math.floor(i / BATCH_SIZE) + 1}`);
                         }
-                    console.log('Inserted CVE data');
+                        console.log('Inserted CVE data');
                     }
                     catch (e) {
                         console.error("An error occurred with uploading the CVE files: ", e);
@@ -130,18 +145,11 @@ export default class dataInserter {
     async queryDataScript(file: any, dataType: string): Promise<void> {
         const startTime = Date.now();
         try {
-            // Assuming you have a stored procedure in Supabase to execute the SQL query.
-            // console.log(file);
             const { data, error } = await this.supabase
                 .from(`${dataType}`)
                 .upsert(file)
-                // .upsert(file, { onConflict: [`${dataType.toLowerCase()}ID`] })
                 .select();
-                // if (error) {
-                //     console.error(`Supabase ${dataType} Upload Error: `, error);
-                // }
-                // else {
-                    // console.log("Data entry successful: ", data);
+                    console.log(error)
                     const storageDir = path.join(__dirname, "..", 'dataStorage');
                     const fileName = `${dataType}_batch.json`;
                     try {
@@ -163,10 +171,10 @@ export default class dataInserter {
                             const endPortion = buffer.toString();
                             const lastBracketPos = endPortion.lastIndexOf(']');
                             
-                            if (lastBracketPos === -1) {
-                                process.exit();
-                                throw new Error('Could not find closing bracket in the file');
-                            }
+                            // if (lastBracketPos === -1) {
+                            //     console.log('Could not find closing bracket in the file');
+                            //     process.exit();
+                            // }
                             
                             
                             // Calculate the actual position in the file
@@ -258,5 +266,5 @@ export default class dataInserter {
     }
 };
 
-// const dataInsert = new dataInserter();
-// dataInsert.dataInsertion();
+const dataInsert = new dataInserter();
+dataInsert.dataInsertion();

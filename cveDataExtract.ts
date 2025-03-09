@@ -4,11 +4,12 @@ export default class cveFunctions {
     constructor() {}
 
     cveDataExtract(jsonData: any) {
-        const { v4: uuidv4 } = require('uuid');
+        // console.log(jsonData);
         // const cveJsonData: {cveId: string, assigner: string, description: string, published_date: string, last_modified_date: string}[] = [];
-        const cveData: {node_uuid: string, created_at: Date, schema: string, node_type: string, data_type: string, provider: string, cveID: string, node_data: any[]}[] = [];
+        const cveData: {created_at: Date, schema: string, node_type: string, data_type: string, provider: string, cveID: string, node_data: any[]}[] = [];
         for (const items of jsonData.CVE_Items) {
             let cveJsonData = [];
+            // console.log(items);
             // Collect the parent URI
             const englishDescription = items.cve.description.description_data.find((desc: any) => desc.lang === "en");
 
@@ -20,7 +21,6 @@ export default class cveFunctions {
                 last_modified_date: items.lastModifiedDate
             });
             cveData.push({
-                node_uuid: uuidv4(),
                 created_at: new Date(),
                 provider: "CVE",
                 schema: "@asgs/schemas/cve.json",
@@ -29,44 +29,60 @@ export default class cveFunctions {
                 cveID: items.cve.CVE_data_meta.ID,
                 node_data: cveJsonData});
             };
+            console.log(cveData);
         return cveData};
 
 
     cveRelationshipsExtract(jsonData: any){
         const fs = require('fs');
-        const { v4: uuidv4 } = require('uuid');
+        // const { v4: uuidv4 } = require('uuid');
         const path = require('path');
-        const relationships: {relationship_uuid: string, created_at: Date, source_node: string, target_node: string, relationship_type: string, relationship_data: any[]}[] = [];
+        const relationships: {created_at: Date, source_node: any, target_node: any, relationship_type: string, relationship_data: any[]}[] = [];
 
         //---------------for readability----------------///
-        const cveBatchData = JSON.parse(fs.readFileSync(path.join(__dirname, 'dataStorage', 'CVE_Batch.json'), 'utf8'));
+        const cveBatchData = JSON.parse(fs.readFileSync(path.join(__dirname, '..' ,'dataStorage', 'CVE_batch.json'), 'utf8'));
         interface cveEntry {
             cveID: string;
             node_uuid: string;
           }
         const cveBatchIndex = new Map<string, cveEntry>(
-        (cveBatchData as cveEntry[]).map((entry: cveEntry) => [entry.cveID, entry])
+        (cveBatchData as cveEntry[])
+            .filter((entry: cveEntry) => entry !== null)
+            .map((entry: cveEntry) => [entry.cveID, entry])
         );
+        ;
 
         //---------------for readability----------------///
-        const cpeBatchData = JSON.parse(fs.readFileSync(path.join(__dirname, 'dataStorage', 'CPE_Batch.json'), 'utf8'));
+        const cpeBatchData = JSON.parse(fs.readFileSync(path.join(__dirname, '..' ,'dataStorage', 'CPE_batch.json'), 'utf8'));
         interface cpeEntry {
             cpeID: string;
             node_uuid: string;
           }
+        // const cpeBatchIndex = new Map<string, cpeEntry>(
+        // (cpeBatchData as cpeEntry[]).map((entry: cpeEntry) => [entry.cpeID, entry])
+        // )
         const cpeBatchIndex = new Map<string, cpeEntry>(
-        (cpeBatchData as cpeEntry[]).map((entry: cpeEntry) => [entry.cpeID, entry])
-        );
+            (cpeBatchData as cpeEntry[])
+              .filter((entry: cpeEntry) => entry !== null)
+              .map((entry: cpeEntry) => [entry.cpeID, entry])
+          );
+          
+        
+        ;
 
         //---------------for readability----------------///
-        const cweBatchData = JSON.parse(fs.readFileSync(path.join(__dirname, 'dataStorage', 'CWE_Batch.json'), 'utf8'));
+        const cweBatchData = JSON.parse(fs.readFileSync(path.join(__dirname, '..','dataStorage', 'CWE_batch.json'), 'utf8'));
         interface cweEntry {
             cweID: string;
             node_uuid: string;
           }
         const cweBatchIndex = new Map<string, cweEntry>(
-        (cweBatchData as cweEntry[]).map((entry: cweEntry) => [entry.cweID, entry])
-        );
+            (cweBatchData as cweEntry[])
+              .filter((entry: cweEntry) => entry !== null)
+              .map((entry: cweEntry) => [entry.cweID, entry])
+          );
+          
+        
 
         for (const items of jsonData.CVE_Items) {
             for (const node of items.configurations.nodes) {
@@ -74,16 +90,15 @@ export default class cveFunctions {
                     for (const cpeValue of child.cpe_match) {
                         let cpe_relationships_json = [];
                         cpe_relationships_json.push({
-                            source_node: JSON.stringify(cveBatchIndex.get(items.cve.CVE_data_meta.ID)?.node_uuid),
-                            target_node: JSON.stringify(cpeBatchIndex.get(cpeValue.cpe23Uri)?.node_uuid),
+                            source_node: cveBatchIndex.get(items.cve.CVE_data_meta.ID)?.node_uuid,
+                            target_node: cpeBatchIndex.get(cpeValue.cpe23Uri)?.node_uuid,
                             relationship_type: "VulnerableTo",
                             created_at: new Date()
                         })
                         relationships.push({
-                            relationship_uuid: uuidv4(),
                             created_at: new Date(),
-                            source_node: JSON.stringify(cpeBatchIndex.get(items.cve.CVE_data_meta.ID)?.node_uuid),
-                            target_node: JSON.stringify(cpeBatchIndex.get(cpeValue.cpe23Uri)?.node_uuid),
+                            source_node: cpeBatchIndex.get(items.cve.CVE_data_meta.ID)?.node_uuid,
+                            target_node: cpeBatchIndex.get(cpeValue.cpe23Uri)?.node_uuid,
                             relationship_type: "VulnerableTo",
                             relationship_data: cpe_relationships_json,
                         })
@@ -94,20 +109,18 @@ export default class cveFunctions {
                 for (const CWE of problemtype.description) {
                     let cwe_relationships_json = [];
                     cwe_relationships_json.push({
-                        source_node: JSON.stringify(cveBatchIndex.get(items.cve.CVE_data_meta.ID)?.node_uuid),
-                        target_node: JSON.stringify(cveBatchIndex.get(CWE.value)?.node_uuid),
+                        source_node: cveBatchIndex.get(items.cve.CVE_data_meta.ID)?.node_uuid,
+                        target_node: cveBatchIndex.get(CWE.value)?.node_uuid,
                         relationship_type: "Problem_Type",
                         created_at: new Date()
                     })
                     relationships.push({
-                        relationship_uuid: uuidv4(),
                         created_at: new Date(),
-                        source_node: JSON.stringify(cveBatchIndex.get(items.cve.CVE_data_meta.ID)?.node_uuid),
-                        target_node: JSON.stringify(cweBatchIndex.get(CWE.value)?.node_uuid),
+                        source_node: cveBatchIndex.get(items.cve.CVE_data_meta.ID)?.node_uuid,
+                        target_node: cweBatchIndex.get(CWE.value)?.node_uuid,
                         relationship_type: "Problem_Type",
                         relationship_data: cwe_relationships_json,
                     })
-                    
                 }
             }}
         return relationships};

@@ -5,8 +5,8 @@ export default class cpeFunctions {
     
     constructor(){}
     cpeDataExtract(jsonData: any) {
-        const { v4: uuidv4 } = require('uuid');
-        const cpeData: {node_uuid: string, created_at: Date, schema: string, provider: string, node_type: string, data_type: string, cpeID: string, node_data: any[]}[] = [];
+        // const { v4: uuidv4 } = require('uuid');
+        const cpeData: {created_at: Date, schema: string, provider: string, node_type: string, data_type: string, cpeID: string, node_data: any[]}[] = [];
         for (const items of jsonData) {
             let cpeJsonData = [];
             // Collect the parent URI
@@ -15,7 +15,7 @@ export default class cpeFunctions {
             });
 
             cpeData.push({
-                node_uuid: uuidv4(),
+                // node_uuid: uuidv4(),
                 created_at: new Date(),
                 schema: "@asgs/schemas/cpe.json",
                 node_type: "CPE",
@@ -25,6 +25,30 @@ export default class cpeFunctions {
                 node_data: cpeJsonData});
             }
         return cpeData};
+
+    cpeChildExtract (jsonData: any){
+        const cpeData: {created_at: Date, schema: string, provider: string, node_type: string, data_type: string, cpeID: string, node_data: any[]}[] = [];
+        for (const items of jsonData) {
+            let cpeChildrenJsonData = [];
+            for (const children of items.cpe_name) {
+                cpeChildrenJsonData.push({
+                    cpeUri: children.cpe23Uri
+                });
+            
+
+            cpeData.push({
+                // node_uuid: uuidv4(),
+                created_at: new Date(),
+                schema: "@asgs/schemas/cpe.json",
+                node_type: "CPE",
+                data_type: "cpe",
+                provider: "CPE",
+                cpeID: items.cpe23Uri,
+                node_data: ["It's a child SKU"]});
+            }
+        }
+        return cpeData};
+
 
     cpeRelationshipsExtract(jsonData: any){
         const { v4: uuidv4 } = require('uuid');
