@@ -55,7 +55,7 @@ export default class cpeFunctions {
         const fs = require('fs');
         const path = require('path');
         const cpeBatchData = JSON.parse(fs.readFileSync(path.join(__dirname, '..' ,'dataStorage', 'CPE_Batch.json'), 'utf8'));
-        const relationships: {relationship_uuid: string, created_at: Date, source_node: string, target_node: string, relationship_type: string, relationship_data: any[]}[] = [];
+        const relationships: {created_at: Date, source_node: string, target_node: string, relationship_type: string, relationship_data: any[]}[] = [];
         interface cpeEntry {
             cpeID: string;
             node_uuid: string;
@@ -75,10 +75,9 @@ export default class cpeFunctions {
                 });
 
                 relationships.push({
-                    relationship_uuid: uuidv4(),
                     created_at: new Date(),
-                    source_node: JSON.stringify(cpeBatchIndex.get(items.cpe23Uri)?.node_uuid),
-                    target_node: JSON.stringify(cpeBatchIndex.get(items_child.cpe23Uri)?.node_uuid),
+                    source_node: cpeBatchIndex.get(items.cpe23Uri)?.node_uuid,
+                    target_node: cpeBatchIndex.get(items_child.cpe23Uri)?.node_uuid,
                     relationship_type: "PARENTOF",
                     relationship_data: cpe_relationships_json,
                 });
