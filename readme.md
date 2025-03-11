@@ -1,7 +1,8 @@
 # Supabase CWE/CPE/CVE Data Extractor
 
 > **Warning:** This tool is still in development. **Do not add this to production** yet!
-> Inspiration taken from: https://github.com/amberzovitis/GraphKer
+
+Inspiration taken from: https://github.com/amberzovitis/GraphKer
 
 ---
 
