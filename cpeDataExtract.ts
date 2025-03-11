@@ -55,7 +55,7 @@ export default class cpeFunctions {
         const fs = require('fs');
         const path = require('path');
         const cpeBatchData = JSON.parse(fs.readFileSync(path.join(__dirname, '..' ,'dataStorage', 'CPE_Batch.json'), 'utf8'));
-        const relationships: {created_at: Date, source_node: string, target_node: string, relationship_type: string, relationship_data: any[]}[] = [];
+        const relationships: {created_at: Date, source_node: any, target_node: any, relationship_type: string, relationship_data: any[]}[] = [];
         interface cpeEntry {
             cpeID: string;
             node_uuid: string;
